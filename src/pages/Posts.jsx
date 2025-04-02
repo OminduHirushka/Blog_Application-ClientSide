@@ -1,14 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
+import { Button, Card, Layout, List, Menu, message, Space, theme } from "antd";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const Home = () => {
+const Posts = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const [posts, setPosts] = useState([]);
+  const [isPostLoaded, setIsPostLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      axios.get("http://localhost:3000/api/v1/all-posts").then((result) => {
+        setPosts(result.data);
+      });
+    } catch (error) {
+      message.error("Faild to Load Posts");
+    } finally {
+      setIsPostLoaded(false);
+    }
+  }, []);
 
   return (
     <Layout>
@@ -54,7 +70,31 @@ const Home = () => {
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
-          ></div>
+          >
+            <List
+              dataSource={posts}
+              loading={isPostLoaded}
+              grid={{ gutter: 16, column: 3 }}
+              renderItem={(post) => (
+                <List.Item>
+                  <Card
+                    title={post.blog_title}
+                    extra={
+                      <Space>
+                        <Link to={"/"}>
+                          <Button type="primary">Edit</Button>
+                        </Link>
+
+                        <Button danger>Delete</Button>
+                      </Space>
+                    }
+                  >
+                    {post.blog_content}
+                  </Card>
+                </List.Item>
+              )}
+            />
+          </div>
         </Content>
 
         <Footer style={{ textAlign: "center" }}>
@@ -66,4 +106,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Posts;
