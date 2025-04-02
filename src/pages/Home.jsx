@@ -39,7 +39,7 @@ const Home = () => {
             <Link to={"/posts"}>Posts</Link>
           </Menu.Item>
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
-            <Link to={"/"}>Add Posts</Link>
+            <Link to={"/add-posts"}>Add Posts</Link>
           </Menu.Item>
         </Menu>
       </Sider>
