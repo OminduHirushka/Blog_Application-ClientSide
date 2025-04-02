@@ -15,16 +15,35 @@ const Posts = () => {
   const [isPostLoaded, setIsPostLoaded] = useState(false);
 
   useEffect(() => {
+    getPosts();
+  }, []);
+
+  const getPosts = async () => {
     try {
-      axios.get("http://localhost:3000/api/v1/all-posts").then((result) => {
-        setPosts(result.data);
-      });
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v1/all-posts"
+      );
+      setPosts(data);
     } catch (error) {
       message.error("Faild to Load Posts");
     } finally {
       setIsPostLoaded(false);
     }
-  }, []);
+  };
+
+  const handleDelete = async (id) => {
+    setIsPostLoaded(true);
+
+    try {
+      await axios.delete(`http://localhost:3000/api/v1/delete-posts/${id}`);
+      getPosts();
+      message.success("Post Deleted Successfully");
+    } catch (error) {
+      message.error("Failed to Deleted Post");
+    } finally {
+      setIsPostLoaded(false);
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -85,7 +104,12 @@ const Posts = () => {
                           <Button type="primary">Edit</Button>
                         </Link>
 
-                        <Button danger>Delete</Button>
+                        <Button
+                          danger
+                          onClick={() => handleDelete(post.blog_id)}
+                        >
+                          Delete
+                        </Button>
                       </Space>
                     }
                   >
