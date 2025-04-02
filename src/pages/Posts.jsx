@@ -27,7 +27,7 @@ const Posts = () => {
   }, []);
 
   return (
-    <Layout>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         breakpoint="lg"
         collapsedWidth="0"
@@ -52,7 +52,7 @@ const Posts = () => {
           }}
         >
           <Menu.Item key={"1"} icon={<UserOutlined />}>
-            <Link to={"/posts"}>Posts</Link>
+            <Link to={"/"}>Posts</Link>
           </Menu.Item>
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
             <Link to={"/add-posts"}>Add Posts</Link>
@@ -81,7 +81,7 @@ const Posts = () => {
                     title={post.blog_title}
                     extra={
                       <Space>
-                        <Link to={"/"}>
+                        <Link to={`/edit-post/${post.blog_id}`}>
                           <Button type="primary">Edit</Button>
                         </Link>
 

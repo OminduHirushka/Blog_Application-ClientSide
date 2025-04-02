@@ -20,9 +20,9 @@ const AddPostForm = () => {
     setisFormLoaded(true);
 
     try {
-        await axios.post("http://localhost:3000/api/v1/add-post", values);
-        navigate("/posts");
-        message.success("Post Added Successfully");
+      await axios.post("http://localhost:3000/api/v1/add-post", values);
+      navigate("/");
+      message.success("Post Added Successfully");
     } catch (error) {
       message.error("Failed to Add Post");
     } finally {
@@ -50,7 +50,7 @@ const AddPostForm = () => {
           }}
         >
           <Menu.Item key={"1"} icon={<UserOutlined />}>
-            <Link to={"/posts"}>Posts</Link>
+            <Link to={"/"}>Posts</Link>
           </Menu.Item>
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
             <Link to={"/add-posts"}>Add Posts</Link>
@@ -103,10 +103,7 @@ const AddPostForm = () => {
                     Submit
                   </Button>
 
-                  <Button 
-                    htmlType="button" 
-                    onClick={() => form.resetFields()}
-                  >
+                  <Button htmlType="button" onClick={() => form.resetFields()}>
                     Reset
                   </Button>
                 </Space>

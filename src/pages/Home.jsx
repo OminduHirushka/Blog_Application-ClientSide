@@ -11,7 +11,7 @@ const Home = () => {
   } = theme.useToken();
 
   return (
-    <Layout>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         breakpoint="lg"
         collapsedWidth="0"
@@ -36,7 +36,7 @@ const Home = () => {
           }}
         >
           <Menu.Item key={"1"} icon={<UserOutlined />}>
-            <Link to={"/posts"}>Posts</Link>
+            <Link to={"/"}>Posts</Link>
           </Menu.Item>
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
             <Link to={"/add-posts"}>Add Posts</Link>
