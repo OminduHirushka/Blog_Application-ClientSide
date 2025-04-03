@@ -21,7 +21,7 @@ const Posts = () => {
   const getPosts = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/v1/all-posts"
+        "http://localhost:3000/api/v1/post/all-posts"
       );
       setPosts(data);
     } catch (error) {
@@ -91,7 +91,7 @@ const Posts = () => {
             }}
           >
             <List
-              dataSource={posts}
+              dataSource={Array.isArray(posts) ? posts : []}
               loading={isPostLoaded}
               grid={{ gutter: 16, column: 3 }}
               renderItem={(post) => (

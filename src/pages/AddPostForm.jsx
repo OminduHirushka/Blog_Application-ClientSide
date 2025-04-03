@@ -20,7 +20,7 @@ const AddPostForm = () => {
     setisFormLoaded(true);
 
     try {
-      await axios.post("http://localhost:3000/api/v1/add-post", values);
+      await axios.post("http://localhost:3000/api/v1/post/add-post", values);
       navigate("/");
       message.success("Post Added Successfully");
     } catch (error) {

@@ -20,7 +20,7 @@ const EditPostForm = () => {
     const getPost = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:3000/api/v1/all-posts/${id}`
+          `http://localhost:3000/api/v1/post/all-posts/${id}`
         );
 
         form.setFieldsValue({
