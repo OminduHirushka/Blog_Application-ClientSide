@@ -17,35 +17,35 @@ import { useNavigate } from "react-router-dom";
 const { Text, Link } = Typography;
 const { useToken } = theme;
 
-const Login = () => {
+const SignUp = () => {
   const { token } = useToken();
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (values) => {
+  const handleSignUp = async (values) => {
     setIsLoading(true);
 
     try {
       const result = await axios.post(
-        "http://localhost:3000/api/v1/auth/login",
+        "http://localhost:3000/api/v1/auth/signup",
         {
+          firstName: values.firstName,
+          lastName: values.lastName,
           email: values.email,
           password: values.password,
         }
       );
 
-      localStorage.setItem("token", result.data.token);
-      message.success("Login successful!");
-
-      if (result.data.user.type === "customer") {
-        navigate("/");
-      } else if (result.data.user.type === "admin") {
-        navigate("#");
-      }
+      message.success("Registration successful!");
+      navigate("/login");
     } catch (err) {
       console.log(err);
-      message.error("Login failed. Please check your credentials.");
+      if (err.response && err.response.status === 400) {
+        message.error("Email already exists");
+      } else {
+        message.error("Registration failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,11 +98,47 @@ const Login = () => {
             />
           </div>
           <Text style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: "20px" }}>
-            Sign in to continue
+            Create an account
           </Text>
         </Space>
 
-        <Form form={form} name="login" onFinish={handleLogin} layout="vertical">
+        <Form form={form} name="signup" onFinish={handleSignUp} layout="vertical">
+          <Form.Item
+            name="firstName"
+            rules={[{ required: true, message: "Please input your first name!" }]}
+          >
+            <Input
+              prefix={
+                <UserOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+              }
+              placeholder="First Name"
+              size="large"
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                borderColor: "rgba(255, 255, 255, 0.3)",
+                color: "#fff",
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="lastName"
+            rules={[{ required: true, message: "Please input your last name!" }]}
+          >
+            <Input
+              prefix={
+                <UserOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+              }
+              placeholder="Last Name"
+              size="large"
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                borderColor: "rgba(255, 255, 255, 0.3)",
+                color: "#fff",
+              }}
+            />
+          </Form.Item>
+
           <Form.Item
             name="email"
             rules={[
@@ -126,13 +162,47 @@ const Login = () => {
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[
+              { required: true, message: "Please input your password!" },
+              { min: 6, message: "Password must be at least 6 characters" },
+            ]}
+            hasFeedback
           >
             <Input.Password
               prefix={
                 <LockOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
               }
               placeholder="Password"
+              size="large"
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                borderColor: "rgba(255, 255, 255, 0.3)",
+                color: "#fff",
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="confirm"
+            dependencies={['password']}
+            hasFeedback
+            rules={[
+              { required: true, message: "Please confirm your password!" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Passwords do not match!'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={
+                <LockOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+              }
+              placeholder="Confirm Password"
               size="large"
               style={{
                 background: "rgba(255, 255, 255, 0.1)",
@@ -157,15 +227,15 @@ const Login = () => {
                 border: "none",
               }}
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? "Registering..." : "Sign Up"}
             </Button>
           </Form.Item>
 
           <div style={{ textAlign: "center", marginTop: 24 }}>
             <Text style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-              Don't have an account?{" "}
-              <Link href="/signup" strong style={{ color: "#fff" }}>
-                Sign up
+              Already have an account?{" "}
+              <Link href="/login" strong style={{ color: "#fff" }}>
+                Login
               </Link>
             </Text>
           </div>
@@ -175,4 +245,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
