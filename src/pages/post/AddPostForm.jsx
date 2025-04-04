@@ -1,54 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Layout, theme, message, Space } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Layout, Menu, theme, message, Space } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
 
-const EditPostForm = () => {
+const AddPostForm = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const token = localStorage.getItem("token");
+  if (token == null) {
+    navigate("/login");
+  }
+
   const [form] = Form.useForm();
-  const { id } = useParams();
-  const [isPostLoaded, setIsPostLoaded] = useState(false);
+  const [isFormLoaded, setisFormLoaded] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getPost = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3000/api/v1/post/all-posts/${id}`
-        );
-
-        form.setFieldsValue({
-          blog_title: data.blog_title,
-          blog_content: data.blog_content,
-        });
-      } catch (error) {
-        message.error("Failed to Load Post");
-      }
-    };
-
-    getPost();
-  }, [id, form, navigate]);
-
-  const handleUpdate = async (values) => {
-    setIsPostLoaded(true);
+  const handleCreate = async (values) => {
+    setisFormLoaded(true);
 
     try {
-      await axios.put(
-        `http://localhost:3000/api/v1/update-posts/${id}`,
-        values
-      );
-      navigate("/");
-      message.success("Post Updated Successfully");
+      await axios.post("http://localhost:3000/api/v1/post/add-post", values, {
+        headers: {
+          Authorization: "Brearer " + token,
+        },
+      });
+      navigate("/post");
+      message.success("Post Added Successfully");
     } catch (error) {
-      message.error("Failed to Update Post");
+      message.error("Failed to Add Post");
     } finally {
-      setIsPostLoaded(false);
+      setisFormLoaded(false);
     }
   };
 
@@ -68,7 +55,7 @@ const EditPostForm = () => {
             form={form}
             layout="vertical"
             autoComplete="off"
-            onFinish={handleUpdate}
+            onFinish={handleCreate}
           >
             <Form.Item
               name="blog_title"
@@ -88,8 +75,12 @@ const EditPostForm = () => {
 
             <Form.Item>
               <Space>
-                <Button type="primary" htmlType="submit" loading={isPostLoaded}>
-                  Update
+                <Button type="primary" htmlType="submit" loading={isFormLoaded}>
+                  Submit
+                </Button>
+
+                <Button htmlType="button" onClick={() => form.resetFields()}>
+                  Reset
                 </Button>
               </Space>
             </Form.Item>
@@ -105,4 +96,4 @@ const EditPostForm = () => {
   );
 };
 
-export default EditPostForm;
+export default AddPostForm;

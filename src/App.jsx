@@ -1,21 +1,17 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-import Posts from "./pages/Posts";
-import AddPostForm from "./pages/AddPostForm";
-import EditPostForm from "./pages/EditPostForm";
+import Posts from "./pages/post/Posts";
 import Login from "./pages/auth/login";
 import SignUp from "./pages/auth/Signup";
 
 const App = () => {
   return (
-    <Routes path="/*">
-      <Route path="/*" element={<Home />} />
+    <Routes>
+      <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/" element={<Posts />} />
-      <Route path="/add-posts" element={<AddPostForm />} />
-      <Route path="/edit-post/:id" element={<EditPostForm />} />
+      <Route path="/post/*" element={<Posts />} />
     </Routes>
   );
 };

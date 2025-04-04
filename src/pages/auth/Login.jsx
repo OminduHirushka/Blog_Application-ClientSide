@@ -39,7 +39,7 @@ const Login = () => {
       message.success("Login successful!");
 
       if (result.data.user.type === "customer") {
-        navigate("/");
+        navigate("/post");
       } else if (result.data.user.type === "admin") {
         navigate("#");
       }
