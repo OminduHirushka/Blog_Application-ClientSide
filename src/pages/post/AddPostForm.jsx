@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Layout, Menu, theme, message, Space } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Footer } = Layout;
 const { TextArea } = Input;
 
 const AddPostForm = () => {
@@ -27,7 +26,7 @@ const AddPostForm = () => {
     try {
       await axios.post("http://localhost:3000/api/v1/post/add-post", values, {
         headers: {
-          Authorization: "Brearer " + token,
+          Authorization: "Bearer " + token,
         },
       });
       navigate("/post");

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Card, Layout, List, Menu, message, Space, theme } from "antd";
-import { Link, Outlet, Route, Routes } from "react-router-dom";
+import { Link, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddPostForm from "./AddPostForm";
 import EditPostForm from "./EditPostForm";
@@ -15,16 +15,36 @@ const Posts = () => {
 
   const [posts, setPosts] = useState([]);
   const [isPostLoaded, setIsPostLoaded] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  if (token == null) {
+    navigate("/login");
+    return;
+  }
 
   useEffect(() => {
+    if (user && user.email) {
+      getPosts(user.email);
+    }
+
     getPosts();
   }, []);
 
-  const getPosts = async () => {
+  const getPosts = async (email) => {
+    setIsPostLoaded(true);
+
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/v1/post/all-posts"
+        `http://localhost:3000/api/v1/post/user-posts/${email}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
       );
+
       setPosts(data);
     } catch (error) {
       message.error("Faild to Load Posts");
@@ -39,7 +59,7 @@ const Posts = () => {
     try {
       await axios.delete(`http://localhost:3000/api/v1/delete-posts/${id}`, {
         headers: {
-          Authorization: "Brearer " + token,
+          Authorization: "Bearer " + token,
         },
       });
 
@@ -70,7 +90,7 @@ const Posts = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[1]}
           style={{
             marginTop: "20px",
             paddingTop: "20px",
@@ -78,7 +98,7 @@ const Posts = () => {
           }}
         >
           <Menu.Item key={"1"} icon={<UserOutlined />}>
-            <Link to={"/post"}>Posts</Link>
+            <Link to={"/post/user-posts"}>Posts</Link>
           </Menu.Item>
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
             <Link to={"/post/add-posts"}>Add Posts</Link>
@@ -102,7 +122,7 @@ const Posts = () => {
                 index
                 element={
                   <List
-                    dataSource={Array.isArray(posts) ? posts : []}
+                    dataSource={posts}
                     loading={isPostLoaded}
                     grid={{ gutter: 16, column: 3 }}
                     renderItem={(post) => (
