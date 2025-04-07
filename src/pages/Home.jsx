@@ -1,67 +1,109 @@
-import React from "react";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, Layout, List, Menu, message, theme, Empty } from "antd";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Footer } = Layout;
+
+const navbar = [
+  {
+    key: "1",
+    label: <Link to={"/login"}>Login</Link>,
+  },
+  {
+    key: "2",
+    label: <Link to={"/signup"}>Sign Up</Link>,
+  },
+];
 
 const Home = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const [posts, setPosts] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const getPosts = async () => {
+      setIsLoaded(true);
+
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/post/all-posts`
+        );
+
+        if (response.data && Array.isArray(response.data.posts)) {
+          setPosts(response.data.posts);
+        }
+      } catch (error) {
+        message.error("Failed to Load Posts");
+      } finally {
+        setIsLoaded(false);
+      }
+    };
+
+    getPosts();
+  }, []);
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={(broken) => {
-          console.log(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
+      <Header
         style={{
-          width: "50px",
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
         }}
       >
         <Menu
           theme="dark"
-          mode="inline"
-          defaultSelectedKeys={["1"]}
+          mode="horizontal"
+          defaultSelectedKeys={[0]}
+          items={navbar}
+          style={{ flex: 1, minWidth: 0 }}
+        />
+      </Header>
+
+      <Content style={{ padding: "0 48px" }}>
+        <div
           style={{
-            marginTop: "20px",
-            paddingTop: "20px",
-            fontSize: "18px",
+            marginTop: 30,
+            padding: 24,
+            minHeight: 600,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
           }}
         >
-          <Menu.Item key={"1"} icon={<UserOutlined />}>
-            <Link to={"/"}>Posts</Link>
-          </Menu.Item>
-          <Menu.Item key={"2"} icon={<UploadOutlined />}>
-            <Link to={"/add-posts"}>Add Posts</Link>
-          </Menu.Item>
-        </Menu>
-      </Sider>
+          <List
+            dataSource={posts}
+            loading={isLoaded}
+            grid={{ gutter: 16, column: 3 }}
+            renderItem={(post) => (
+              <List.Item>
+                <Card title={post?.blog_title || "Untitled Post"}>
+                  {post?.blog_content || "No content available"}
 
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "24px 16px 0" }}>
-          <div
-            style={{
-              padding: 24,
-              minHeight: 600,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-          ></div>
-        </Content>
+                  <p className="m-4">
+                    <small>
+                      {post.user_email}
+                      <br />
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </small>
+                  </p>
+                </Card>
+              </List.Item>
+            )}
+          />
+        </div>
+      </Content>
 
-        <Footer style={{ textAlign: "center" }}>
-          Omindu Hirushka
-          <br />©{new Date().getFullYear()}
-        </Footer>
-      </Layout>
+      <Footer style={{ textAlign: "center" }}>
+        Omindu Hirushka
+        <br />©{new Date().getFullYear()}
+      </Footer>
     </Layout>
   );
 };

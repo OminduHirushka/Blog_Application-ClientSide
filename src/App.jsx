@@ -8,7 +8,7 @@ import SignUp from "./pages/auth/Signup";
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/post/*" element={<Posts />} />
