@@ -24,8 +24,8 @@ const EditPostForm = () => {
         );
 
         form.setFieldsValue({
-          blog_title: data.blog_title,
-          blog_content: data.blog_content,
+          blog_title: data.post.blog_title,
+          blog_content: data.post.blog_content,
         });
       } catch (error) {
         message.error("Failed to Load Post");
@@ -38,9 +38,12 @@ const EditPostForm = () => {
   const handleUpdate = async (values) => {
     setIsPostLoaded(true);
 
+    const token = localStorage.getItem("token");
+
+
     try {
       await axios.put(
-        `http://localhost:3000/api/v1/update-posts/${id}`,
+        `http://localhost:3000/api/v1/post/update-posts/${id}`,
         values,
         {
           headers: {
@@ -48,7 +51,7 @@ const EditPostForm = () => {
           },
         }
       );
-      navigate("/");
+      navigate("/post");
       message.success("Post Updated Successfully");
     } catch (error) {
       message.error("Failed to Update Post");
@@ -101,11 +104,6 @@ const EditPostForm = () => {
           </Form>
         </div>
       </Content>
-
-      <Footer style={{ textAlign: "center" }}>
-        Omindu Hirushka
-        <br />©{new Date().getFullYear()}
-      </Footer>
     </Layout>
   );
 };

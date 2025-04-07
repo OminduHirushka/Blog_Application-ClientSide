@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button, Form, Input, Layout, Menu, theme, message, Space } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 const { TextArea } = Input;
 
 const AddPostForm = () => {
@@ -86,11 +86,6 @@ const AddPostForm = () => {
           </Form>
         </div>
       </Content>
-
-      <Footer style={{ textAlign: "center" }}>
-        Omindu Hirushka
-        <br />©{new Date().getFullYear()}
-      </Footer>
     </Layout>
   );
 };

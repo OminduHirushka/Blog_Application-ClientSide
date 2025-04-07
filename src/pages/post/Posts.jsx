@@ -1,7 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import {
+  LogoutOutlined,
+  UploadOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Button, Card, Layout, List, Menu, message, Space, theme } from "antd";
-import { Link, Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddPostForm from "./AddPostForm";
 import EditPostForm from "./EditPostForm";
@@ -17,26 +21,44 @@ const Posts = () => {
   const [isPostLoaded, setIsPostLoaded] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
-  if (token == null) {
-    navigate("/login");
-    return;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    getUserByEmail(token);
+  }, [navigate]);
 
   useEffect(() => {
     if (user && user.email) {
-      getPosts(user.email);
+      getUserPosts(user.email);
     }
+  }, [user]);
 
-    getPosts();
-  }, []);
+  const getUserByEmail = async (token) => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/v1/user/me", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      });
+      setUser(response.data.user);
+    } catch (error) {
+      message.error("Failed to load user data");
+    }
+  };
 
-  const getPosts = async (email) => {
+  const getUserPosts = async (email) => {
     setIsPostLoaded(true);
 
+    const token = localStorage.getItem("token");
+
     try {
-      const { data } = await axios.get(
+      const response = await axios.get(
         `http://localhost:3000/api/v1/post/user-posts/${email}`,
         {
           headers: {
@@ -45,9 +67,17 @@ const Posts = () => {
         }
       );
 
-      setPosts(data);
+      if (response.data && Array.isArray(response.data.post)) {
+        setPosts(response.data.post);
+      } else {
+        setPosts([]);
+      }
     } catch (error) {
-      message.error("Faild to Load Posts");
+      if (error.response && error.response.status === 404) {
+        setPosts([]);
+      } else {
+        message.error("Failed to load posts");
+      }
     } finally {
       setIsPostLoaded(false);
     }
@@ -55,21 +85,34 @@ const Posts = () => {
 
   const handleDelete = async (id) => {
     setIsPostLoaded(true);
+    const token = localStorage.getItem("token");
 
     try {
-      await axios.delete(`http://localhost:3000/api/v1/delete-posts/${id}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
+      await axios.delete(
+        `http://localhost:3000/api/v1/post/delete-posts/${id}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
 
-      getPosts();
+      if (user && user.email) {
+        getUserPosts(user.email);
+      }
       message.success("Post Deleted Successfully");
     } catch (error) {
-      message.error("Failed to Deleted Post");
+      message.error("Failed to Delete Post");
     } finally {
       setIsPostLoaded(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+
+    navigate("/login");
+    message.success("Logged out successfully");
   };
 
   return (
@@ -90,7 +133,7 @@ const Posts = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={[1]}
+          defaultSelectedKeys={["1"]}
           style={{
             marginTop: "20px",
             paddingTop: "20px",
@@ -98,10 +141,23 @@ const Posts = () => {
           }}
         >
           <Menu.Item key={"1"} icon={<UserOutlined />}>
-            <Link to={"/post/user-posts"}>Posts</Link>
+            <Link to={"/post"}>My Posts</Link>
           </Menu.Item>
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
             <Link to={"/post/add-posts"}>Add Posts</Link>
+          </Menu.Item>
+
+          <Menu.Item
+            key={"3"}
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+            style={{
+              position: "absolute",
+              bottom: "50px",
+              width: "100%",
+            }}
+          >
+            Logout
           </Menu.Item>
         </Menu>
       </Sider>
@@ -121,34 +177,41 @@ const Posts = () => {
               <Route
                 index
                 element={
-                  <List
-                    dataSource={posts}
-                    loading={isPostLoaded}
-                    grid={{ gutter: 16, column: 3 }}
-                    renderItem={(post) => (
-                      <List.Item>
-                        <Card
-                          title={post.blog_title}
-                          extra={
-                            <Space>
-                              <Link to={`/edit-post/${post.blog_id}`}>
-                                <Button type="primary">Edit</Button>
-                              </Link>
+                  <>
+                    <h2>My Posts</h2>
+                    {posts.length === 0 && !isPostLoaded ? (
+                      <p>You haven't created any posts yet.</p>
+                    ) : (
+                      <List
+                        dataSource={posts}
+                        loading={isPostLoaded}
+                        grid={{ gutter: 16, column: 3 }}
+                        renderItem={(post) => (
+                          <List.Item>
+                            <Card
+                              title={post.blog_title}
+                              extra={
+                                <Space>
+                                  <Link to={`edit-post/${post.blog_id}`}>
+                                    <Button type="primary">Edit</Button>
+                                  </Link>
 
-                              <Button
-                                danger
-                                onClick={() => handleDelete(post.blog_id)}
-                              >
-                                Delete
-                              </Button>
-                            </Space>
-                          }
-                        >
-                          {post.blog_content}
-                        </Card>
-                      </List.Item>
+                                  <Button
+                                    danger
+                                    onClick={() => handleDelete(post.blog_id)}
+                                  >
+                                    Delete
+                                  </Button>
+                                </Space>
+                              }
+                            >
+                              {post.blog_content}
+                            </Card>
+                          </List.Item>
+                        )}
+                      />
                     )}
-                  />
+                  </>
                 }
               />
 
