@@ -23,9 +23,31 @@ const postSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+
+    deletePostRequest: (state) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    deletePostSuccess: (state, action) => {
+      state.isLoading = false;
+      state.posts = state.posts.filter(
+        (post) => post.blog_id !== action.payload
+      );
+      state.error = null;
+    },
+    deletePostFailure: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
-export const { fetchPostsRequest, fetchPostsSuccess, fetchPostsFailure } =
-  postSlice.actions;
+export const {
+  fetchPostsRequest,
+  fetchPostsSuccess,
+  fetchPostsFailure,
+  deletePostRequest,
+  deletePostSuccess,
+  deletePostFailure,
+} = postSlice.actions;
 export default postSlice.reducer;

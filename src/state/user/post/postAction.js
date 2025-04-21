@@ -1,5 +1,8 @@
 import axios from "axios";
 import {
+  deletePostFailure,
+  deletePostRequest,
+  deletePostSuccess,
   fetchPostsFailure,
   fetchPostsRequest,
   fetchPostsSuccess,
@@ -51,6 +54,28 @@ export const getUserPosts = (email) => async (dispatch) => {
     } else {
       dispatch(fetchPostsFailure("Failed to load posts"));
     }
+    throw error;
+  }
+};
+
+export const deletePost = (id) => async (dispatch) => {
+  dispatch(deletePostRequest());
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    await axios.delete(`${API_URL}/post/delete-posts/${id}`, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    dispatch(deletePostSuccess(id));
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    dispatch(deletePostFailure("Failed to delete post"));
     throw error;
   }
 };

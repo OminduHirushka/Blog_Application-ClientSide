@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   LogoutOutlined,
   UploadOutlined,
@@ -6,12 +6,12 @@ import {
 } from "@ant-design/icons";
 import { Button, Card, Layout, List, Menu, message, Space, theme } from "antd";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
-import axios from "axios";
 import AddPostForm from "./AddPostForm";
 import EditPostForm from "./EditPostForm";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../state/admin/users/userAction";
-import { getUserPosts } from "../../state/user/post/postAction";
+import { deletePost, getUserPosts } from "../../state/user/post/postAction";
+import { logoutRequest } from "../../state/admin/users/userSlice";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -44,6 +44,22 @@ const Posts = () => {
       dispatch(getUserPosts(user.email));
     }
   }, [dispatch, user]);
+
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deletePost(id));
+      message.success("Post Deleted Successfully");
+    } catch (error) {
+      message.error("Failed to Delete Post");
+    }
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutRequest());
+
+    navigate("/login");
+    message.success("Logged out successfully");
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -80,6 +96,7 @@ const Posts = () => {
           <Menu.Item
             key={"3"}
             icon={<LogoutOutlined />}
+            onClick={handleLogout}
             style={{
               position: "absolute",
               bottom: "50px",
@@ -125,7 +142,12 @@ const Posts = () => {
                                     <Button type="primary">Edit</Button>
                                   </Link>
 
-                                  <Button danger>Delete</Button>
+                                  <Button
+                                    danger
+                                    onClick={() => handleDelete(post.blog_id)}
+                                  >
+                                    Delete
+                                  </Button>
                                 </Space>
                               }
                             >
