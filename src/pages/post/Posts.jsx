@@ -9,6 +9,9 @@ import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddPostForm from "./AddPostForm";
 import EditPostForm from "./EditPostForm";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentUser } from "../../state/admin/users/userAction";
+import { getUserPosts } from "../../state/user/post/postAction";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -17,103 +20,30 @@ const Posts = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const [posts, setPosts] = useState([]);
-  const [isPostLoaded, setIsPostLoaded] = useState(false);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isAuthenticated } = useSelector((state) => state.users);
+  const { posts, isLoading } = useSelector((state) => state.posts);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+    if (!isAuthenticated) {
       navigate("/login");
       return;
     }
 
-    getUserByEmail(token);
-  }, [navigate]);
+    dispatch(getCurrentUser()).then((success) => {
+      if (!success) {
+        navigate("/login");
+      }
+    });
+  }, [dispatch, isAuthenticated, navigate]);
 
   useEffect(() => {
     if (user && user.email) {
-      getUserPosts(user.email);
+      dispatch(getUserPosts(user.email));
     }
-  }, [user]);
-
-  const getUserByEmail = async (token) => {
-    try {
-      const response = await axios.get("http://localhost:3000/api/v1/user/me", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
-      setUser(response.data.user);
-    } catch (error) {
-      message.error("Failed to load user data");
-    }
-  };
-
-  const getUserPosts = async (email) => {
-    setIsPostLoaded(true);
-
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/v1/post/user-posts/${email}`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-
-      if (response.data && Array.isArray(response.data.post)) {
-        setPosts(response.data.post);
-      } else {
-        setPosts([]);
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        setPosts([]);
-      } else {
-        message.error("Failed to load posts");
-      }
-    } finally {
-      setIsPostLoaded(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    setIsPostLoaded(true);
-    const token = localStorage.getItem("token");
-
-    try {
-      await axios.delete(
-        `http://localhost:3000/api/v1/post/delete-posts/${id}`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-
-      if (user && user.email) {
-        getUserPosts(user.email);
-      }
-      message.success("Post Deleted Successfully");
-    } catch (error) {
-      message.error("Failed to Delete Post");
-    } finally {
-      setIsPostLoaded(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-
-    navigate("/login");
-    message.success("Logged out successfully");
-  };
+  }, [dispatch, user]);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -150,7 +80,6 @@ const Posts = () => {
           <Menu.Item
             key={"3"}
             icon={<LogoutOutlined />}
-            onClick={handleLogout}
             style={{
               position: "absolute",
               bottom: "50px",
@@ -179,12 +108,12 @@ const Posts = () => {
                 element={
                   <>
                     <h2>My Posts</h2>
-                    {posts.length === 0 && !isPostLoaded ? (
+                    {posts.length === 0 && !isLoading ? (
                       <p>You haven't created any posts yet.</p>
                     ) : (
                       <List
                         dataSource={posts}
-                        loading={isPostLoaded}
+                        loading={isLoading}
                         grid={{ gutter: 16, column: 3 }}
                         renderItem={(post) => (
                           <List.Item>
@@ -196,12 +125,7 @@ const Posts = () => {
                                     <Button type="primary">Edit</Button>
                                   </Link>
 
-                                  <Button
-                                    danger
-                                    onClick={() => handleDelete(post.blog_id)}
-                                  >
-                                    Delete
-                                  </Button>
+                                  <Button danger>Delete</Button>
                                 </Space>
                               }
                             >

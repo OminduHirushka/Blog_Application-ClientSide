@@ -1,5 +1,9 @@
 import axios from "axios";
-import { fetchPostsFailure, fetchPostsRequest, fetchPostsSuccess } from "./postSlice";
+import {
+  fetchPostsFailure,
+  fetchPostsRequest,
+  fetchPostsSuccess,
+} from "./postSlice";
 
 const API_URL = "http://localhost:3000/api/v1";
 
@@ -17,6 +21,36 @@ export const getAllPosts = () => async (dispatch) => {
   } catch (error) {
     console.error(error);
     dispatch(fetchPostsFailure("Failed to load posts"));
+    throw error;
+  }
+};
+
+export const getUserPosts = (email) => async (dispatch) => {
+  dispatch(fetchPostsRequest());
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const result = await axios.get(`${API_URL}/post/user-posts/${email}`, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    if (result.data && Array.isArray(result.data.post)) {
+      dispatch(fetchPostsSuccess(result.data.post));
+    } else {
+      dispatch(fetchPostsSuccess([]));
+    }
+  } catch (error) {
+    console.error(error);
+
+    if (error.result && error.result.status === 404) {
+      dispatch(fetchPostsSuccess([]));
+    } else {
+      dispatch(fetchPostsFailure("Failed to load posts"));
+    }
     throw error;
   }
 };

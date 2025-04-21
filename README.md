@@ -14,6 +14,7 @@ Install dependencies:
 npm install antd axios react-router-dom cors
 npm install -D tailwindcss@3
 npx tailwindcss init
+npm install @reduxjs/toolkit react-redux
 
 Start development server:
 npm run dev
