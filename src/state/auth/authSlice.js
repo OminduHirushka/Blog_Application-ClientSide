@@ -35,9 +35,33 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       state.success = "Logout Success";
     },
+
+    signupRequest: (state) => {
+      state.isLoading = true;
+      state.error = null;
+      state.registrationSuccess = false;
+    },
+    signupSuccess: (state) => {
+      state.isLoading = false;
+      state.error = null;
+      state.registrationSuccess = true;
+      state.success = "SignUp Success";
+    },
+    signupFailure: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+      state.registrationSuccess = false;
+    },
   },
 });
 
-export const { loginRequest, loginSuccess, loginFailure, logout } =
-  authSlice.actions;
+export const {
+  loginRequest,
+  loginSuccess,
+  loginFailure,
+  logout,
+  signupRequest,
+  signupSuccess,
+  signupFailure,
+} = authSlice.actions;
 export default authSlice.reducer;

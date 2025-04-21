@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Form,
@@ -11,8 +11,9 @@ import {
   Flex,
 } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signupUser } from "../../state/auth/authAction";
 
 const { Text, Link } = Typography;
 const { useToken } = theme;
@@ -20,34 +21,26 @@ const { useToken } = theme;
 const SignUp = () => {
   const { token } = useToken();
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading, error } = useSelector((state) => state.auth);
 
   const handleSignUp = async (values) => {
-    setIsLoading(true);
-
     try {
-      const result = await axios.post(
-        "http://localhost:3000/api/v1/auth/signup",
-        {
+      await dispatch(
+        signupUser({
           firstName: values.firstName,
           lastName: values.lastName,
           email: values.email,
           password: values.password,
-        }
+        })
       );
 
       message.success("Registration successful!");
       navigate("/login");
     } catch (err) {
-      console.log(err);
-      if (err.response && err.response.status === 400) {
-        message.error("Email already exists");
-      } else {
-        message.error("Registration failed. Please try again.");
-      }
-    } finally {
-      setIsLoading(false);
+      message.error(error || "Registration failed. Please try again.");
     }
   };
 
@@ -102,10 +95,17 @@ const SignUp = () => {
           </Text>
         </Space>
 
-        <Form form={form} name="signup" onFinish={handleSignUp} layout="vertical">
+        <Form
+          form={form}
+          name="signup"
+          onFinish={handleSignUp}
+          layout="vertical"
+        >
           <Form.Item
             name="firstName"
-            rules={[{ required: true, message: "Please input your first name!" }]}
+            rules={[
+              { required: true, message: "Please input your first name!" },
+            ]}
           >
             <Input
               prefix={
@@ -123,7 +123,9 @@ const SignUp = () => {
 
           <Form.Item
             name="lastName"
-            rules={[{ required: true, message: "Please input your last name!" }]}
+            rules={[
+              { required: true, message: "Please input your last name!" },
+            ]}
           >
             <Input
               prefix={
@@ -184,16 +186,16 @@ const SignUp = () => {
 
           <Form.Item
             name="confirm"
-            dependencies={['password']}
+            dependencies={["password"]}
             hasFeedback
             rules={[
               { required: true, message: "Please confirm your password!" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
+                  if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('Passwords do not match!'));
+                  return Promise.reject(new Error("Passwords do not match!"));
                 },
               }),
             ]}
