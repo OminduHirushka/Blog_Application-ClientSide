@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Form,
@@ -11,8 +11,9 @@ import {
   Flex,
 } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../state/auth/authAction";
 
 const { Text, Link } = Typography;
 const { useToken } = theme;
@@ -20,34 +21,29 @@ const { useToken } = theme;
 const Login = () => {
   const { token } = useToken();
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading, error } = useSelector((state) => state.auth);
 
   const handleLogin = async (values) => {
-    setIsLoading(true);
-
     try {
-      const result = await axios.post(
-        "http://localhost:3000/api/v1/auth/login",
-        {
+      const result = await dispatch(
+        loginUser({
           email: values.email,
           password: values.password,
-        }
+        })
       );
 
-      localStorage.setItem("token", result.data.token);
       message.success("Login successful!");
 
-      if (result.data.user.type === "customer") {
+      if (result.user.type === "customer") {
         navigate("/post");
-      } else if (result.data.user.type === "admin") {
+      } else if (result.user.type === "admin") {
         navigate("#");
       }
     } catch (err) {
-      console.log(err);
-      message.error("Login failed. Please check your credentials.");
-    } finally {
-      setIsLoading(false);
+      message.error(error || "Login failed. Please check your credentials.");
     }
   };
 
