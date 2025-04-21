@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Card, Layout, List, Menu, message, theme, Empty } from "antd";
+import React, { useEffect } from "react";
+import { Card, Layout, List, Menu, message, theme } from "antd";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllPosts } from "../state/user/post/postAction";
 
 const { Header, Content, Footer } = Layout;
 
@@ -21,31 +22,19 @@ const Home = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const [posts, setPosts] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const dispatch = useDispatch();
+  const { posts, isLoading, error } = useSelector((state) => state.posts);
 
   useEffect(() => {
-    const getPosts = async () => {
-      setIsLoaded(true);
+    dispatch(getAllPosts())
+  }, [dispatch]);
 
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/v1/post/all-posts`
-        );
-
-        if (response.data && Array.isArray(response.data.posts)) {
-          setPosts(response.data.posts);
-        }
-      } catch (error) {
-        message.error("Failed to Load Posts");
-      } finally {
-        setIsLoaded(false);
-      }
-    };
-
-    getPosts();
-  }, []);
-
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
+  
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header
@@ -79,7 +68,7 @@ const Home = () => {
         >
           <List
             dataSource={posts}
-            loading={isLoaded}
+            loading={isLoading}
             grid={{ gutter: 16, column: 3 }}
             renderItem={(post) => (
               <List.Item>
