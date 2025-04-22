@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Form, Input, Layout, Menu, theme, message, Space } from "antd";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentUser } from "../../state/admin/users/userAction";
+import { createPost } from "../../state/user/post/postAction";
 
 const { Header, Content } = Layout;
 const { TextArea } = Input;
@@ -11,30 +13,35 @@ const AddPostForm = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const token = localStorage.getItem("token");
-  if (token == null) {
-    navigate("/login");
-  }
-
   const [form] = Form.useForm();
-  const [isFormLoaded, setisFormLoaded] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { isLoading } = useSelector((state) => state.posts);
+  const { isAuthenticated } = useSelector((state) => state.users);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    dispatch(getCurrentUser()).then((success) => {
+      if (!success) {
+        navigate("/login");
+      }
+    });
+  }, [dispatch, isAuthenticated, navigate]);
 
   const handleCreate = async (values) => {
-    setisFormLoaded(true);
-
     try {
-      await axios.post("http://localhost:3000/api/v1/post/add-post", values, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
+      await dispatch(createPost(values));
+
+      message.success("Post Created Successfully");
       navigate("/post");
-      message.success("Post Added Successfully");
     } catch (error) {
-      message.error("Failed to Add Post");
-    } finally {
-      setisFormLoaded(false);
+      message.error("Failed to Create Post");
     }
   };
 
@@ -74,7 +81,7 @@ const AddPostForm = () => {
 
             <Form.Item>
               <Space>
-                <Button type="primary" htmlType="submit" loading={isFormLoaded}>
+                <Button type="primary" htmlType="submit" loading={isLoading}>
                   Submit
                 </Button>
 

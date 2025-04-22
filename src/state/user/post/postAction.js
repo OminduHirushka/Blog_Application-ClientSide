@@ -1,5 +1,8 @@
 import axios from "axios";
 import {
+  addPostFailure,
+  addPostRequest,
+  addPostSuccess,
   deletePostFailure,
   deletePostRequest,
   deletePostSuccess,
@@ -76,6 +79,27 @@ export const deletePost = (id) => async (dispatch) => {
   } catch (error) {
     console.error(error);
     dispatch(deletePostFailure("Failed to delete post"));
+    throw error;
+  }
+};
+
+export const createPost = (postData) => async (dispatch) => {
+  dispatch(addPostRequest());
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const result = await axios.post(`${API_URL}/post/add-post`, postData, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    dispatch(addPostSuccess(result.data));
+    return result.data;
+  } catch (error) {
+    console.log(error);
+    dispatch(addPostFailure("Failed to create post"));
     throw error;
   }
 };

@@ -39,6 +39,20 @@ const postSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+
+    addPostRequest: (state) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    addPostSuccess: (state, action) => {
+      state.isLoading = false;
+      state.posts = [action.payload, ...state.posts];
+      state.error = null;
+    },
+    addPostFailure: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -49,5 +63,8 @@ export const {
   deletePostRequest,
   deletePostSuccess,
   deletePostFailure,
+  addPostRequest,
+  addPostSuccess,
+  addPostFailure,
 } = postSlice.actions;
 export default postSlice.reducer;
