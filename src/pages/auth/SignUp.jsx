@@ -9,14 +9,25 @@ import {
   theme,
   Space,
   Flex,
+  Layout,
+  Menu,
 } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signupUser } from "../../state/auth/authAction";
+import { Header } from "antd/es/layout/layout";
+import Title from "antd/es/skeleton/Title";
 
-const { Text, Link } = Typography;
+const { Text } = Typography;
 const { useToken } = theme;
+
+const navbar = [
+  {
+    key: "home",
+    label: <Link to={"/"}>Home</Link>,
+  },
+];
 
 const SignUp = () => {
   const { token } = useToken();
@@ -45,205 +56,245 @@ const SignUp = () => {
   };
 
   return (
-    <Flex
-      align="center"
-      justify="center"
-      style={{
-        minHeight: "100vh",
-        background: `linear-gradient(135deg, ${token.colorPrimary} 0%, #52c41a 100%)`,
-        padding: 24,
-      }}
-    >
-      <Card
+    <Layout style={{ minHeight: "100vh" }}>
+      <Header
         style={{
-          width: 450,
-          borderRadius: 12,
-          boxShadow: "0 6px 16px 0 rgba(0, 0, 0, 0.12)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          background: "rgba(255, 255, 255, 0.15)",
-          backdropFilter: "blur(8px)",
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 24px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+          background: "linear-gradient(90deg, #001529 0%, #003366 100%)",
         }}
-        body={{ padding: 40 }}
-        hoverable
       >
-        <Space
-          direction="vertical"
-          align="center"
-          style={{ width: "100%", marginBottom: 30 }}
-        >
-          <div
-            style={{
-              background: "rgba(255, 255, 255, 0.9)",
-              width: 80,
-              height: 80,
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 16,
-            }}
+        <Space align="center">
+          <Title
+            level={2}
+            style={{ color: "#fff", margin: 0, marginRight: "auto" }}
           >
-            <UserOutlined
-              style={{
-                fontSize: 36,
-                color: token.colorPrimary,
-              }}
-            />
-          </div>
-          <Text style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: "20px" }}>
-            Create an account
-          </Text>
+            Blog Hub
+          </Title>
         </Space>
 
-        <Form
-          form={form}
-          name="signup"
-          onFinish={handleSignUp}
-          layout="vertical"
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={["home"]}
+          items={navbar}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            marginLeft: "auto",
+          }}
+        />
+      </Header>
+
+      <Flex
+        align="center"
+        justify="center"
+        style={{
+          minHeight: "100vh",
+          background: `linear-gradient(135deg, ${token.colorPrimary} 0%, #52c41a 100%)`,
+          padding: 24,
+        }}
+      >
+        <Card
+          style={{
+            width: 450,
+            borderRadius: 12,
+            boxShadow: "0 6px 16px 0 rgba(0, 0, 0, 0.12)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            background: "rgba(255, 255, 255, 0.15)",
+            backdropFilter: "blur(8px)",
+          }}
+          body={{ padding: 40 }}
+          hoverable
         >
-          <Form.Item
-            name="firstName"
-            rules={[
-              { required: true, message: "Please input your first name!" },
-            ]}
+          <Space
+            direction="vertical"
+            align="center"
+            style={{ width: "100%", marginBottom: 30 }}
           >
-            <Input
-              prefix={
-                <UserOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
-              }
-              placeholder="First Name"
-              size="large"
+            <div
               style={{
-                background: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "#fff",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="lastName"
-            rules={[
-              { required: true, message: "Please input your last name!" },
-            ]}
-          >
-            <Input
-              prefix={
-                <UserOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
-              }
-              placeholder="Last Name"
-              size="large"
-              style={{
-                background: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "#fff",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: "Please input your email!" },
-              { type: "email", message: "Please enter a valid email!" },
-            ]}
-          >
-            <Input
-              prefix={
-                <MailOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
-              }
-              placeholder="Email"
-              size="large"
-              style={{
-                background: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "#fff",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: "Please input your password!" },
-              { min: 6, message: "Password must be at least 6 characters" },
-            ]}
-            hasFeedback
-          >
-            <Input.Password
-              prefix={
-                <LockOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
-              }
-              placeholder="Password"
-              size="large"
-              style={{
-                background: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "#fff",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="confirm"
-            dependencies={["password"]}
-            hasFeedback
-            rules={[
-              { required: true, message: "Please confirm your password!" },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error("Passwords do not match!"));
-                },
-              }),
-            ]}
-          >
-            <Input.Password
-              prefix={
-                <LockOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
-              }
-              placeholder="Confirm Password"
-              size="large"
-              style={{
-                background: "rgba(255, 255, 255, 0.1)",
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "#fff",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 16 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              loading={isLoading}
-              block
-              style={{
-                height: 45,
-                fontWeight: 600,
-                borderRadius: 8,
-                background: token.colorPrimary,
-                border: "none",
+                background: "rgba(255, 255, 255, 0.9)",
+                width: 80,
+                height: 80,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 16,
               }}
             >
-              {isLoading ? "Registering..." : "Sign Up"}
-            </Button>
-          </Form.Item>
+              <UserOutlined
+                style={{
+                  fontSize: 36,
+                  color: token.colorPrimary,
+                }}
+              />
+            </div>
 
-          <div style={{ textAlign: "center", marginTop: 24 }}>
-            <Text style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-              Already have an account?{" "}
-              <Link href="/login" strong style={{ color: "#fff" }}>
-                Login
-              </Link>
+            <Text
+              style={{ color: "rgba(255, 255, 255, 0.8)", fontSize: "20px" }}
+            >
+              Sign-Up
             </Text>
-          </div>
-        </Form>
-      </Card>
-    </Flex>
+          </Space>
+
+          <Form
+            form={form}
+            name="signup"
+            onFinish={handleSignUp}
+            layout="vertical"
+          >
+            <Form.Item
+              name="firstName"
+              rules={[
+                { required: true, message: "Please input your first name!" },
+              ]}
+            >
+              <Input
+                prefix={
+                  <UserOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                }
+                placeholder="First Name"
+                size="large"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  color: "#fff",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="lastName"
+              rules={[
+                { required: true, message: "Please input your last name!" },
+              ]}
+            >
+              <Input
+                prefix={
+                  <UserOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                }
+                placeholder="Last Name"
+                size="large"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  color: "#fff",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: "Please input your email!" },
+                { type: "email", message: "Please enter a valid email!" },
+              ]}
+            >
+              <Input
+                prefix={
+                  <MailOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                }
+                placeholder="Email"
+                size="large"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  color: "#fff",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              rules={[
+                { required: true, message: "Please input your password!" },
+                { min: 6, message: "Password must be at least 6 characters" },
+              ]}
+              hasFeedback
+            >
+              <Input.Password
+                prefix={
+                  <LockOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                }
+                placeholder="Password"
+                size="large"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  color: "#fff",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="confirm"
+              dependencies={["password"]}
+              hasFeedback
+              rules={[
+                { required: true, message: "Please confirm your password!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Passwords do not match!"));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                prefix={
+                  <LockOutlined style={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                }
+                placeholder="Confirm Password"
+                size="large"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  color: "#fff",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 16 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                loading={isLoading}
+                block
+                style={{
+                  height: 45,
+                  fontWeight: 600,
+                  borderRadius: 8,
+                  background: token.colorPrimary,
+                  border: "none",
+                }}
+              >
+                {isLoading ? "Registering..." : "Sign Up"}
+              </Button>
+            </Form.Item>
+
+            <div style={{ textAlign: "center", marginTop: 24 }}>
+              <Text style={{ color: "rgba(255, 255, 255, 0.8)" }}>
+                Already have an account?{" "}
+                <Link to="/login" strong style={{ color: "#fff" }}>
+                  Login
+                </Link>
+              </Text>
+            </div>
+          </Form>
+        </Card>
+      </Flex>
+    </Layout>
   );
 };
 

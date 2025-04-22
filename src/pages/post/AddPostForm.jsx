@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Form, Input, Layout, Menu, theme, message, Space } from "antd";
+import { Button, Form, Input, Layout, theme, message, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../state/admin/users/userAction";
@@ -47,7 +47,6 @@ const AddPostForm = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Header style={{ padding: 0, background: colorBgContainer }} />
       <Content style={{ margin: "24px 16px 0" }}>
         <div
           style={{
@@ -62,13 +61,27 @@ const AddPostForm = () => {
             layout="vertical"
             autoComplete="off"
             onFinish={handleCreate}
+            style={{
+              maxWidth: "800px",
+              margin: "0 auto",
+              padding: "20px",
+              background: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            }}
           >
+            <h2 style={{ marginBottom: "24px" }}>Create New Post</h2>
+
             <Form.Item
               name="blog_title"
               label="Title"
               rules={[{ required: true, message: "Please Input the Title!" }]}
             >
-              <Input placeholder="Enter Post Title" />
+              <Input
+                placeholder="Enter Post Title"
+                size="large"
+                style={{ borderRadius: "6px" }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -76,16 +89,31 @@ const AddPostForm = () => {
               label="Content"
               rules={[{ required: true, message: "Please Input the Content!" }]}
             >
-              <TextArea rows={6} placeholder="Enter Post Content" />
+              <TextArea
+                rows={10}
+                placeholder="Enter Post Content"
+                style={{ borderRadius: "6px" }}
+              />
             </Form.Item>
 
             <Form.Item>
-              <Space>
-                <Button type="primary" htmlType="submit" loading={isLoading}>
+              <Space size="middle">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  size="large"
+                  style={{ borderRadius: "6px" }}
+                >
                   Submit
                 </Button>
 
-                <Button htmlType="button" onClick={() => form.resetFields()}>
+                <Button
+                  htmlType="button"
+                  onClick={() => form.resetFields()}
+                  size="large"
+                  style={{ borderRadius: "6px" }}
+                >
                   Reset
                 </Button>
               </Space>

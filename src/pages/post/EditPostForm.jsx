@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Form, Input, Layout, theme, message, Space } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentPost, updatePost } from "../../state/user/post/postAction";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 const { TextArea } = Input;
 
 const EditPostForm = () => {
@@ -75,13 +74,27 @@ const EditPostForm = () => {
             layout="vertical"
             autoComplete="off"
             onFinish={handleUpdate}
+            style={{
+              maxWidth: "800px",
+              margin: "0 auto",
+              padding: "20px",
+              background: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            }}
           >
+            <h2 style={{ marginBottom: "24px" }}>Edit Post</h2>
+
             <Form.Item
               name="blog_title"
               label="Title"
               rules={[{ required: true, message: "Please Input the Title!" }]}
             >
-              <Input placeholder="Enter Post Title" />
+              <Input
+                placeholder="Enter Post Title"
+                size="large"
+                style={{ borderRadius: "6px" }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -89,13 +102,32 @@ const EditPostForm = () => {
               label="Content"
               rules={[{ required: true, message: "Please Input the Content!" }]}
             >
-              <TextArea rows={6} placeholder="Enter Post Content" />
+              <TextArea
+                rows={10}
+                placeholder="Enter Post Content"
+                style={{ borderRadius: "6px" }}
+              />
             </Form.Item>
 
             <Form.Item>
-              <Space>
-                <Button type="primary" htmlType="submit" loading={isLoading}>
+              <Space size="middle">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  size="large"
+                  style={{ borderRadius: "6px" }}
+                >
                   Update
+                </Button>
+
+                <Button
+                  htmlType="button"
+                  onClick={() => navigate("/post")}
+                  size="large"
+                  style={{ borderRadius: "6px" }}
+                >
+                  Cancel
                 </Button>
               </Space>
             </Form.Item>

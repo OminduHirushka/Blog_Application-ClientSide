@@ -4,7 +4,17 @@ import {
   UploadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Layout, List, Menu, message, Space, theme } from "antd";
+import {
+  Button,
+  Card,
+  Layout,
+  List,
+  Menu,
+  message,
+  Space,
+  theme,
+  Typography,
+} from "antd";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import AddPostForm from "./AddPostForm";
 import EditPostForm from "./EditPostForm";
@@ -13,7 +23,8 @@ import { getCurrentUser } from "../../state/admin/users/userAction";
 import { deletePost, getUserPosts } from "../../state/user/post/postAction";
 import { logoutRequest } from "../../state/admin/users/userSlice";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
+const { Title } = Typography;
 
 const Posts = () => {
   const {
@@ -64,26 +75,34 @@ const Posts = () => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={(broken) => {
-          console.log(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
         style={{
-          width: "50px",
+          height: "100vh",
+          position: "fixed",
+          zIndex: 10,
         }}
       >
+        <div
+          className="logo"
+          style={{
+            height: "64px",
+            margin: "16px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            fontSize: "20px",
+            fontWeight: "bold",
+          }}
+        >
+          Blog Hub
+        </div>
+
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["1"]}
           style={{
-            marginTop: "20px",
-            paddingTop: "20px",
-            fontSize: "18px",
+            fontSize: "16px",
           }}
         >
           <Menu.Item key={"1"} icon={<UserOutlined />}>
@@ -92,7 +111,6 @@ const Posts = () => {
           <Menu.Item key={"2"} icon={<UploadOutlined />}>
             <Link to={"/post/add-posts"}>Add Posts</Link>
           </Menu.Item>
-
           <Menu.Item
             key={"3"}
             icon={<LogoutOutlined />}
@@ -104,13 +122,12 @@ const Posts = () => {
             }}
           >
             Logout
-          </Menu.Item>
+          </Menu.Item>{" "}
         </Menu>
       </Sider>
 
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "24px 16px 0" }}>
+        <Content style={{ marginLeft: 200 }}>
           <div
             style={{
               padding: 24,
@@ -124,7 +141,7 @@ const Posts = () => {
                 index
                 element={
                   <>
-                    <h2>My Posts</h2>
+                    <Title level={2}>My Posts</Title>
                     {posts.length === 0 && !isLoading ? (
                       <p>You haven't created any posts yet.</p>
                     ) : (
@@ -136,14 +153,29 @@ const Posts = () => {
                           <List.Item>
                             <Card
                               title={post.blog_title}
+                              hoverable
+                              style={{
+                                height: "100%",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                                borderRadius: "8px",
+                                border: "1px solid #e8e8e8",
+                                background: "#ffffff",
+                              }}
+                              bodyStyle={{
+                                background: "#f7f7f7",
+                                borderBottom: "1px solid #e8e8e8",
+                              }}
                               extra={
                                 <Space>
                                   <Link to={`edit-post/${post.blog_id}`}>
-                                    <Button type="primary">Edit</Button>
+                                    <Button type="primary" size="small">
+                                      Edit
+                                    </Button>
                                   </Link>
 
                                   <Button
                                     danger
+                                    size="small"
                                     onClick={() => handleDelete(post.blog_id)}
                                   >
                                     Delete
@@ -151,7 +183,15 @@ const Posts = () => {
                                 </Space>
                               }
                             >
-                              {post.blog_content}
+                              <div
+                                style={{
+                                  height: "120px",
+                                  overflow: "hidden",
+                                  padding: "4px",
+                                }}
+                              >
+                                {post.blog_content}
+                              </div>
                             </Card>
                           </List.Item>
                         )}
@@ -166,11 +206,6 @@ const Posts = () => {
             </Routes>
           </div>
         </Content>
-
-        <Footer style={{ textAlign: "center" }}>
-          Omindu Hirushka
-          <br />©{new Date().getFullYear()}
-        </Footer>
       </Layout>
     </Layout>
   );
