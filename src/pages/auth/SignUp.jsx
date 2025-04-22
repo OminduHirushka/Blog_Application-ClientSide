@@ -10,19 +10,17 @@ import {
   Space,
   Flex,
   Layout,
-  Menu,
 } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signupUser } from "../../state/auth/authAction";
-import { Header } from "antd/es/layout/layout";
-import Title from "antd/es/skeleton/Title";
+import Navbar from "../../components/Navbar";
 
 const { Text } = Typography;
 const { useToken } = theme;
 
-const navbar = [
+const nav = [
   {
     key: "home",
     label: <Link to={"/"}>Home</Link>,
@@ -57,40 +55,7 @@ const SignUp = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1,
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 24px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-          background: "linear-gradient(90deg, #001529 0%, #003366 100%)",
-        }}
-      >
-        <Space align="center">
-          <Title
-            level={2}
-            style={{ color: "#fff", margin: 0, marginRight: "auto" }}
-          >
-            Blog Hub
-          </Title>
-        </Space>
-
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={["home"]}
-          items={navbar}
-          style={{
-            backgroundColor: "transparent",
-            border: "none",
-            marginLeft: "auto",
-          }}
-        />
-      </Header>
+      <Navbar nav={nav} selectedKey="home" />
 
       <Flex
         align="center"

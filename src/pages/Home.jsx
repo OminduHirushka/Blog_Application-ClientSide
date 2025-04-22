@@ -3,7 +3,6 @@ import {
   Card,
   Layout,
   List,
-  Menu,
   message,
   theme,
   Typography,
@@ -20,11 +19,13 @@ import {
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPosts } from "../state/user/post/postAction";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-const { Header, Content, Footer } = Layout;
+const { Content } = Layout;
 const { Title, Text: Typography_Text, Paragraph } = Typography;
 
-const navbar = [
+const nav = [
   {
     key: "home",
     label: "Home",
@@ -61,40 +62,7 @@ const Home = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1,
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 24px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-          background: "linear-gradient(90deg, #001529 0%, #003366 100%)",
-        }}
-      >
-        <Space align="center">
-          <Title
-            level={2}
-            style={{ color: "#fff", margin: 0, marginRight: "auto" }}
-          >
-            Blog Hub
-          </Title>
-        </Space>
-
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={["home"]}
-          items={navbar}
-          style={{
-            backgroundColor: "transparent",
-            border: "none",
-            marginLeft: "auto",
-          }}
-        />
-      </Header>
+      <Navbar nav={nav} selectedKey="home" />
 
       <Content style={{ padding: "24px 48px", background: "#f5f5f5" }}>
         <div
@@ -156,7 +124,7 @@ const Home = () => {
                   <div style={{ minHeight: "100px", color: "#595959" }}>
                     <Paragraph
                       ellipsis={{ rows: 3 }}
-                      style={{ color: "inherit", fontSize:"18px" }}
+                      style={{ color: "inherit", fontSize: "18px" }}
                     >
                       {post?.blog_content || "No content available"}
                     </Paragraph>
@@ -185,8 +153,10 @@ const Home = () => {
                       <Divider type="vertical" />
 
                       <Space size={4}>
-                        <CalendarOutlined style={{ color: "#52c41a", marginLeft:"8vw" }} />
-                        
+                        <CalendarOutlined
+                          style={{ color: "#52c41a", marginLeft: "8vw" }}
+                        />
+
                         <Typography_Text type="secondary">
                           {new Date(post.created_at).toLocaleDateString(
                             "en-US",
@@ -207,23 +177,7 @@ const Home = () => {
         />
       </Content>
 
-      <Footer
-        style={{
-          textAlign: "center",
-          background: "#001529",
-          padding: 24,
-          color: "#fff",
-        }}
-      >
-        <Space direction="vertical" size={0}>
-          <Typography_Text strong style={{ color: "#1890ff" }}>
-            Blog Hub
-          </Typography_Text>
-          <Typography_Text style={{ color: "#8c8c8c" }}>
-            Created by Omindu Hirushka | © {new Date().getFullYear()}
-          </Typography_Text>
-        </Space>
-      </Footer>
+      <Footer />
     </Layout>
   );
 };

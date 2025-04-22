@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../state/admin/users/userAction";
 import { createPost } from "../../state/user/post/postAction";
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { TextArea } = Input;
 
 const AddPostForm = () => {
