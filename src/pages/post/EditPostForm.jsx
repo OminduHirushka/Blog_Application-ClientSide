@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Layout, theme, message, Space } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentPost, updatePost } from "../../state/user/post/postAction";
 
 const { Header, Content, Footer } = Layout;
 const { TextArea } = Input;
@@ -13,50 +15,46 @@ const EditPostForm = () => {
 
   const [form] = Form.useForm();
   const { id } = useParams();
-  const [isPostLoaded, setIsPostLoaded] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { isLoading } = useSelector((state) => state.posts);
+  const { isAuthenticated } = useSelector((state) => state.users);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     const getPost = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3000/api/v1/post/all-posts/${id}`
-        );
+      const post = await dispatch(getCurrentPost(id));
 
+      if (post) {
         form.setFieldsValue({
-          blog_title: data.post.blog_title,
-          blog_content: data.post.blog_content,
+          blog_title: post.blog_title,
+          blog_content: post.blog_content,
         });
-      } catch (error) {
+      } else {
         message.error("Failed to Load Post");
+        navigate("/post");
       }
     };
 
     getPost();
-  }, [id, form, navigate]);
+  }, [dispatch, id, form, navigate]);
 
   const handleUpdate = async (values) => {
-    setIsPostLoaded(true);
-
-    const token = localStorage.getItem("token");
-
-
     try {
-      await axios.put(
-        `http://localhost:3000/api/v1/post/update-posts/${id}`,
-        values,
-        {
-          headers: {
-            Authorization: "Brearer " + token,
-          },
-        }
-      );
-      navigate("/post");
+      await dispatch(updatePost(id, values));
+
       message.success("Post Updated Successfully");
+      navigate("/post");
     } catch (error) {
       message.error("Failed to Update Post");
-    } finally {
-      setIsPostLoaded(false);
     }
   };
 
@@ -96,7 +94,7 @@ const EditPostForm = () => {
 
             <Form.Item>
               <Space>
-                <Button type="primary" htmlType="submit" loading={isPostLoaded}>
+                <Button type="primary" htmlType="submit" loading={isLoading}>
                   Update
                 </Button>
               </Space>

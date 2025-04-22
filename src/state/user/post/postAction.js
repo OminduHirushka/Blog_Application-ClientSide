@@ -9,6 +9,9 @@ import {
   fetchPostsFailure,
   fetchPostsRequest,
   fetchPostsSuccess,
+  updatePostFailure,
+  updatePostRequest,
+  updatePostSuccess,
 } from "./postSlice";
 
 const API_URL = "http://localhost:3000/api/v1";
@@ -86,9 +89,10 @@ export const deletePost = (id) => async (dispatch) => {
 export const createPost = (postData) => async (dispatch) => {
   dispatch(addPostRequest());
 
-  try {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  if (!token) return;
 
+  try {
     const result = await axios.post(`${API_URL}/post/add-post`, postData, {
       headers: {
         Authorization: "Bearer " + token,
@@ -100,6 +104,50 @@ export const createPost = (postData) => async (dispatch) => {
   } catch (error) {
     console.log(error);
     dispatch(addPostFailure("Failed to create post"));
+    throw error;
+  }
+};
+
+export const getCurrentPost = (id) => async (dispatch) => {
+  dispatch(fetchPostsRequest());
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const result = await axios.get(`${API_URL}/post/all-posts/${id}`);
+
+    dispatch(fetchPostsSuccess(result.data.post));
+    return result.data.post;
+  } catch (error) {
+    console.log(error);
+    dispatch(fetchPostsFailure("Failed to load post"));
+    throw error;
+  }
+};
+
+export const updatePost = (id, postData) => async (dispatch) => {
+  dispatch(updatePostRequest());
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const result = await axios.put(
+      `${API_URL}/post/update-posts/${id}`,
+      postData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    dispatch(updatePostSuccess(result.data));
+    return result.data;
+  } catch (error) {
+    console.log(error);
+    dispatch(updatePostFailure("Failed to update post"));
     throw error;
   }
 };

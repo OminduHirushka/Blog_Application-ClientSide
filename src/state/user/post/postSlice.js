@@ -53,6 +53,22 @@ const postSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+
+    updatePostRequest: (state) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    updatePostSuccess: (state, action) => {
+      state.isLoading = false;
+      state.posts = state.posts.map((post) =>
+        post.blog_id === action.payload.blog_id ? action.payload : post
+      );
+      state.error = null;
+    },
+    updatePostFailure: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -66,5 +82,8 @@ export const {
   addPostRequest,
   addPostSuccess,
   addPostFailure,
+  updatePostRequest,
+  updatePostSuccess,
+  updatePostFailure,
 } = postSlice.actions;
 export default postSlice.reducer;
