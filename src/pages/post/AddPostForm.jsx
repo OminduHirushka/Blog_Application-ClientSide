@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../state/admin/users/userAction";
 import { createPost } from "../../state/user/post/postAction";
+import toast from "react-hot-toast";
 
 const { Content } = Layout;
 const { TextArea } = Input;
@@ -38,10 +39,10 @@ const AddPostForm = () => {
     try {
       await dispatch(createPost(values));
 
-      message.success("Post Created Successfully");
+      toast.success("Post Created Successfully");
       navigate("/post");
     } catch (error) {
-      message.error("Failed to Create Post");
+      toast.error("Failed to Create Post");
     }
   };
 

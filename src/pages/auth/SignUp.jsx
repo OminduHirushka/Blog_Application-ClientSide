@@ -5,7 +5,6 @@ import {
   Input,
   Card,
   Typography,
-  message,
   theme,
   Space,
   Flex,
@@ -16,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signupUser } from "../../state/auth/authAction";
 import Navbar from "../../components/Navbar";
+import toast from "react-hot-toast";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -46,10 +46,10 @@ const SignUp = () => {
         })
       );
 
-      message.success("Registration successful!");
+      toast.success("Registered Successfully");
       navigate("/login");
     } catch (err) {
-      message.error(error || "Registration failed. Please try again.");
+      toast.error("Registration Failed. Please Try Again.");
     }
   };
 

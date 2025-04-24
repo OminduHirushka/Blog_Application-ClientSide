@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Form,
   Input,
   Card,
   Typography,
-  message,
   theme,
   Space,
   Flex,
@@ -16,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../state/auth/authAction";
 import Navbar from "../../components/Navbar";
+import toast from "react-hot-toast";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -44,7 +44,7 @@ const Login = () => {
         })
       );
 
-      message.success("Login successful!");
+      toast.success("Logged-In Successfully");
 
       if (result.user.type === "customer") {
         navigate("/post");
@@ -52,7 +52,9 @@ const Login = () => {
         navigate("#");
       }
     } catch (err) {
-      message.error(error || "Login failed. Please check your credentials.");
+      toast.error("Username or Password is Incorrect", {
+        position: "top-center",
+      });
     }
   };
 

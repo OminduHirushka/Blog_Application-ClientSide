@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { Button, Form, Input, Layout, theme, message, Space } from "antd";
+import { Button, Form, Input, Layout, theme, Space } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentPost, updatePost } from "../../state/user/post/postAction";
+import toast from "react-hot-toast";
 
 const { Header, Content } = Layout;
 const { TextArea } = Input;
@@ -38,7 +39,7 @@ const EditPostForm = () => {
           blog_content: post.blog_content,
         });
       } else {
-        message.error("Failed to Load Post");
+        toast.error("Failed to Load Post");
         navigate("/post");
       }
     };
@@ -50,10 +51,10 @@ const EditPostForm = () => {
     try {
       await dispatch(updatePost(id, values));
 
-      message.success("Post Updated Successfully");
+      toast.success("Post Updated Successfully");
       navigate("/post");
     } catch (error) {
-      message.error("Failed to Update Post");
+      toast.error("Failed to Update Post");
     }
   };
 

@@ -10,7 +10,6 @@ import {
   Layout,
   List,
   Menu,
-  message,
   Space,
   theme,
   Typography,
@@ -22,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../state/admin/users/userAction";
 import { deletePost, getUserPosts } from "../../state/user/post/postAction";
 import { logoutRequest } from "../../state/admin/users/userSlice";
+import toast from "react-hot-toast";
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
@@ -59,9 +59,9 @@ const Posts = () => {
   const handleDelete = async (id) => {
     try {
       await dispatch(deletePost(id));
-      message.success("Post Deleted Successfully");
+      toast.success("Post Deleted Successfully");
     } catch (error) {
-      message.error("Failed to Delete Post");
+      toast.error("Failed to Delete Post");
     }
   };
 
@@ -69,7 +69,6 @@ const Posts = () => {
     dispatch(logoutRequest());
 
     navigate("/login");
-    message.success("Logged out successfully");
   };
 
   return (
